@@ -1,7 +1,6 @@
 package com.riwi.filtro.infrastructure.services;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -79,20 +78,13 @@ public class UserService implements IUserService {
 
     BeanUtils.copyProperties(user, userResponse);
 
-    userResponse.setSurveys(user.getSurveys().stream().map(this::surveyToSurveyToUser).collect(Collectors.toList()));
-
     return userResponse;
   }
 
   private User userRequestToUser(UserRequest userRequest, User user) {
     BeanUtils.copyProperties(userRequest, user);
-    user.setSurveys(new ArrayList<>());
+
     return user;
   }
 
-  private SurveyToUser surveyToSurveyToUser(Survey survey) {
-    SurveyToUser surveyToUser = new SurveyToUser();
-    BeanUtils.copyProperties(survey, surveyToUser);
-    return surveyToUser;
-  }
 }

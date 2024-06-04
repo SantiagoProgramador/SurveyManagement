@@ -1,6 +1,5 @@
 package com.riwi.filtro.api.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class QuestionResponse {
   private Long id;
-  private String name;
-  private String email;
-  private boolean active;
-
+  private String text;
+  private String type;
+  private Boolean active;
 }
