@@ -1,7 +1,5 @@
 package com.riwi.filtro.api.dto.response;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UserToSurvey {
   private Long id;
   private String name;
   private String email;
   private boolean active;
-  private List<SurveyToUser> surveys;
 }
