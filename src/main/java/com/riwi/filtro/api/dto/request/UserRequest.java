@@ -2,6 +2,7 @@ package com.riwi.filtro.api.dto.request;
 
 import org.hibernate.validator.constraints.Length;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class UserRequest {
 
   @NotEmpty(message = "Empty email")
   @Length(min = 5, max = 100, message = "Length of the email is invalid")
+  @Email(message = "The email address is invalid")
   private String email;
 
   @NotEmpty(message = "Empty password")

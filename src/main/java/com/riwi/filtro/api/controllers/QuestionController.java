@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,5 +78,15 @@ public class QuestionController {
   public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
     this.iQuestionService.delete(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @Operation(summary = "Update a question according to the id summoned without the options")
+  @ApiResponse(responseCode = "400", description = "When the id given is not found or the information is incorrect", content = {
+      @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
+  @PatchMapping(path = "/update/{id}")
+  public ResponseEntity<QuestionResponse> updateQuestionWithoutOptions(@RequestBody QuestionRequest questionRequest,
+      @PathVariable Long id) {
+
+    return ResponseEntity.ok(this.iQuestionService.updateWithoutOptions(id, questionRequest));
   }
 }

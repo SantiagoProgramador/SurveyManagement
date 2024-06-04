@@ -10,8 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.SurveyRequest;
+import com.riwi.filtro.api.dto.response.OptionQuestionResponse;
+import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.api.dto.response.SurveyResponse;
 import com.riwi.filtro.api.dto.response.UserToSurvey;
+import com.riwi.filtro.domain.entities.OptionQuestion;
+import com.riwi.filtro.domain.entities.Question;
 import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.SurveyRepository;
@@ -43,8 +47,14 @@ public class SurveyService implements ISurveyService {
   @Override
   public SurveyResponse getById(Long id) {
     Survey survey = findSurvey(id);
+    SurveyResponse surveyResponse = new SurveyResponse();
 
-    return this.surveyToSurveyResponse(survey);
+    BeanUtils.copyProperties(survey, surveyResponse);
+    if (survey.getQuestions() != null) {
+      surveyResponse.setQuestions(survey.getQuestions().stream().map(this::questionToQuestionResponse).toList());
+    }
+    surveyResponse.setUser(this.userToUserToSurvey(survey.getUser()));
+    return surveyResponse;
   }
 
   private Survey findSurvey(Long id) {
@@ -97,4 +107,16 @@ public class SurveyService implements ISurveyService {
     return userToSurvey;
   }
 
+  private QuestionResponse questionToQuestionResponse(Question question) {
+    QuestionResponse questionResponse = new QuestionResponse();
+    BeanUtils.copyProperties(question, questionResponse);
+    questionResponse.setOptions(question.getOptionQuestions().stream().map(this::optionToOptionResponse).toList());
+    return questionResponse;
+  }
+
+  private OptionQuestionResponse optionToOptionResponse(OptionQuestion optionQuestion) {
+    OptionQuestionResponse optionQuestionResponse = new OptionQuestionResponse();
+    BeanUtils.copyProperties(optionQuestion, optionQuestionResponse);
+    return optionQuestionResponse;
+  }
 }

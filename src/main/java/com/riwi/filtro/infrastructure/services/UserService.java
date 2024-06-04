@@ -1,7 +1,6 @@
 package com.riwi.filtro.infrastructure.services;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,13 @@ public class UserService implements IUserService {
   @Override
   public UserResponse getById(Long id) {
     User user = findUser(id);
+    UserResponse userResponse = new UserResponse();
 
-    return this.userToUserResponse(user);
+    BeanUtils.copyProperties(user, userResponse);
+    if (user.getSurveys() != null) {
+      userResponse.setSurveys(user.getSurveys().stream().map(this::surveyToSurveyToUser).toList());
+    }
+    return userResponse;
   }
 
   private User findUser(Long id) {
@@ -77,7 +81,6 @@ public class UserService implements IUserService {
     UserResponse userResponse = new UserResponse();
 
     BeanUtils.copyProperties(user, userResponse);
-
     return userResponse;
   }
 
@@ -85,6 +88,12 @@ public class UserService implements IUserService {
     BeanUtils.copyProperties(userRequest, user);
 
     return user;
+  }
+
+  private SurveyToUser surveyToSurveyToUser(Survey survey) {
+    SurveyToUser surveyToUser = new SurveyToUser();
+    BeanUtils.copyProperties(survey, surveyToUser);
+    return surveyToUser;
   }
 
 }
