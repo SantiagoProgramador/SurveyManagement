@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OptionQuestionRequest {
 
+  private Long id;
+
   @NotBlank(message = "Type the text of the option")
   private String text;
 
-  @NotNull
+  @NotNull(message = "The status of the option is required")
   private boolean active;
-
 }
