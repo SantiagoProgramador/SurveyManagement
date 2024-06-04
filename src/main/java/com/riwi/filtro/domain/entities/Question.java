@@ -1,5 +1,8 @@
 package com.riwi.filtro.domain.entities;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +31,7 @@ public class Question {
   private Long id;
 
   @Lob
+  @Column(nullable = false)
   private String text;
 
   @Column(nullable = false)
@@ -40,4 +45,9 @@ public class Question {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "survey_id", referencedColumnName = "id")
   private Survey survey;
+
+  @OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = false)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private List<OptionQuestion> optionQuestions;
 }
