@@ -1,13 +1,20 @@
 package com.riwi.filtro.infrastructure.services;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
+import com.riwi.filtro.api.dto.response.SurveyToUser;
 import com.riwi.filtro.api.dto.response.UserResponse;
+import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
@@ -23,9 +30,13 @@ public class UserService implements IUserService {
   private final UserRepository userRepository;
 
   @Override
-  public List<UserResponse> getAll() {
+  public Page<UserResponse> getAll(int size, int page) {
+    if (page < 0) {
+      page = 0;
+    }
+    Pageable pageable = PageRequest.of(page, size);
 
-    return this.userRepository.findAll().stream().map(this::userToUserResponse).toList();
+    return this.userRepository.findAll(pageable).map(this::userToUserResponse);
   }
 
   @Override
@@ -68,11 +79,20 @@ public class UserService implements IUserService {
 
     BeanUtils.copyProperties(user, userResponse);
 
+    userResponse.setSurveys(user.getSurveys().stream().map(this::surveyToSurveyToUser).collect(Collectors.toList()));
+
     return userResponse;
   }
 
   private User userRequestToUser(UserRequest userRequest, User user) {
     BeanUtils.copyProperties(userRequest, user);
+    user.setSurveys(new ArrayList<>());
     return user;
+  }
+
+  private SurveyToUser surveyToSurveyToUser(Survey survey) {
+    SurveyToUser surveyToUser = new SurveyToUser();
+    BeanUtils.copyProperties(survey, surveyToUser);
+    return surveyToUser;
   }
 }
