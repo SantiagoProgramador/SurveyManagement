@@ -34,7 +34,7 @@ public class SurveyController {
   private final ISurveyService iSurveyService;
 
   @Operation(summary = "Show the surveys by pagination")
-  @ApiResponse(responseCode = "400", description = "When the params send are invalid", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping
   public ResponseEntity<Page<SurveyResponse>> showAll(@RequestParam(defaultValue = "1") int page,
@@ -44,7 +44,7 @@ public class SurveyController {
   }
 
   @Operation(summary = "Show the survey according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping(path = "/{id}")
   public ResponseEntity<SurveyResponse> showSurvey(@PathVariable Long id) {
@@ -53,7 +53,7 @@ public class SurveyController {
   }
 
   @Operation(summary = "Create a survey with the information given")
-  @ApiResponse(responseCode = "400", description = "When the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PostMapping(path = "/add")
   public ResponseEntity<SurveyResponse> addSurvey(@Validated @RequestBody SurveyRequest surveyRequest) {
@@ -62,7 +62,7 @@ public class SurveyController {
   }
 
   @Operation(summary = "Update a survey according to the id given and the information summoned")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found or the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
   public ResponseEntity<SurveyResponse> updateSurvey(@Validated @RequestBody SurveyRequest surveyRequest,
@@ -72,7 +72,7 @@ public class SurveyController {
   }
 
   @Operation(summary = "Delete a survey according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @DeleteMapping(path = "/{id}")
   public ResponseEntity<Void> deleteSurvey(@PathVariable Long id) {

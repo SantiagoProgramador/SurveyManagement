@@ -54,5 +54,5 @@ public class Question {
   @OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = false)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  private List<OptionQuestion> optionQuestions;
+  private List<OptionQuestion> options;
 }

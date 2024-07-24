@@ -1,6 +1,5 @@
 package com.riwi.filtro.infrastructure.services;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,19 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.OptionQuestionRequest;
 import com.riwi.filtro.api.dto.request.QuestionRequest;
-import com.riwi.filtro.api.dto.response.OptionQuestionResponse;
 import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.domain.entities.OptionQuestion;
 import com.riwi.filtro.domain.entities.Question;
+import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.repositories.OptionQuestionRepository;
 import com.riwi.filtro.domain.repositories.QuestionRepository;
-import com.riwi.filtro.domain.repositories.SurveyRepository;
 import com.riwi.filtro.infrastructure.abstracts.IQuestionService;
 import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
 import com.riwi.filtro.infrastructure.mappers.QuestionMapper;
-import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
 import com.riwi.filtro.utils.enums.QuestionType;
 import com.riwi.filtro.utils.exceptions.IdNotFoundException;
+import com.riwi.filtro.utils.exceptions.QuestionTypeException;
 
 import lombok.AllArgsConstructor;
 
@@ -33,9 +31,6 @@ public class QuestionService implements IQuestionService {
   private final QuestionRepository questionRepository;
 
   @Autowired
-  private final SurveyRepository surveyRepository;
-
-  @Autowired
   private final OptionQuestionRepository optionQuestionRepository;
 
   @Autowired
@@ -44,9 +39,6 @@ public class QuestionService implements IQuestionService {
   @Autowired
   private final ISurveyService surveyService;
 
-  @Autowired
-  private final SurveyMapper surveyMapper;
-
   @Override
   public Page<QuestionResponse> getAll(int size, int page) {
     if (page < 0) {
@@ -54,14 +46,14 @@ public class QuestionService implements IQuestionService {
     }
     Pageable pageable = PageRequest.of(page, size);
 
-    return this.questionRepository.findAll(pageable).map(this::questionToQuestionResponse);
+    return this.questionRepository.findAll(pageable).map(questionMapper::questionToResponse);
   }
 
   @Override
   public QuestionResponse getById(Long id) {
     Question question = findEntity(id);
 
-    return this.questionToQuestionResponse(question);
+    return this.questionMapper.questionToResponse(question);
   }
 
   @Override
@@ -71,53 +63,61 @@ public class QuestionService implements IQuestionService {
 
   @Override
   public QuestionResponse create(QuestionRequest request) {
-    Question question = new Question();
+    Survey survey = this.surveyService.findEntity(request.getSurveyId());
 
-    this.questionRequestToQuestion(request, question);
+    if (!this.isTypeCorrect(request)) {
+      throw new QuestionTypeException();
+    }
 
-    question = this.questionRepository.save(question);
+    Question question = this.questionMapper.requestToQuestion(request);
+    question.setSurvey(survey);
 
     if (request.getOptions() != null) {
       for (OptionQuestionRequest optionQuestionRequest : request.getOptions()) {
-        OptionQuestion optionQuestion = new OptionQuestion();
-        BeanUtils.copyProperties(optionQuestionRequest, optionQuestion);
+        OptionQuestion optionQuestion = this.questionMapper.requestToOptionQuestion(optionQuestionRequest);
         optionQuestion.setQuestion(question);
         this.optionQuestionRepository.save(optionQuestion);
       }
     }
 
-    return this.questionToQuestionResponse(question);
+    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
   }
 
   @Override
   public QuestionResponse update(Long id, QuestionRequest request) {
     Question question = findEntity(id);
 
-    this.questionRequestToQuestion(request, question);
+    if (question.getSurvey().getId().equals(request.getSurveyId())) {
+      Survey survey = this.surveyService.findEntity(id);
+      question.setSurvey(survey);
+    }
+    if (!this.isTypeCorrect(request)) {
+      throw new QuestionTypeException();
+    }
 
-    question = this.questionRepository.save(question);
+    question = this.questionMapper.requestToQuestion(request);
 
     if (request.getOptions() != null) {
-      for (OptionQuestion optionQuestion : question.getOptionQuestions()) {
-
-        BeanUtils.copyProperties(request.getOptions(), optionQuestion);
+      this.optionQuestionRepository.deleteAll(question.getOptions());
+      for (OptionQuestionRequest optionQuestionRequest : request.getOptions()) {
+        OptionQuestion optionQuestion = this.questionMapper.requestToOptionQuestion(optionQuestionRequest);
         optionQuestion.setQuestion(question);
         this.optionQuestionRepository.save(optionQuestion);
       }
     }
-
-    return this.questionToQuestionResponse(question);
+    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
   }
 
   public QuestionResponse updateWithoutOptions(Long id, QuestionRequest questionRequest) {
     Question question = findEntity(id);
-    question.setActive(questionRequest.isActive());
-    question.setSurvey(this.surveyRepository.findById(questionRequest.getSurveyId())
-        .orElseThrow(() -> new IdNotFoundException("Surveys")));
-    question.setText(questionRequest.getText());
-    question.setType(questionRequest.getType());
 
-    return this.questionToQuestionResponse(this.questionRepository.save(question));
+    if (question.getSurvey().getId().equals(questionRequest.getSurveyId())) {
+      Survey survey = this.surveyService.findEntity(id);
+      question.setSurvey(survey);
+    }
+    question = this.questionMapper.requestToQuestion(questionRequest);
+
+    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
   }
 
   @Override
@@ -126,40 +126,9 @@ public class QuestionService implements IQuestionService {
     this.questionRepository.delete(question);
   }
 
-  private QuestionResponse questionToQuestionResponse(Question question) {
-    QuestionResponse questionResponse = new QuestionResponse();
-    BeanUtils.copyProperties(question, questionResponse);
+  private boolean isTypeCorrect(QuestionRequest questionRequest) {
 
-    if (question.getOptionQuestions() != null) {
-      questionResponse.setOptions(question.getOptionQuestions().stream().map(this::optionToOptionResponse).toList());
-    }
-
-    return questionResponse;
-  }
-
-  private Question questionRequestToQuestion(QuestionRequest questionRequest, Question question) {
-    BeanUtils.copyProperties(questionRequest, question);
-    question.setSurvey(this.surveyRepository.findById(questionRequest.getSurveyId())
-        .orElseThrow(() -> new IdNotFoundException("surveys")));
-
-    if (question.getType() == QuestionType.CLOSED) {
-      question.setOptionQuestions(questionRequest.getOptions().stream().map(this::optionRequestToOption).toList());
-    } else if (question.getType() == QuestionType.OPEN) {
-      question.setOptionQuestions(null);
-    }
-    return question;
-  }
-
-  private OptionQuestion optionRequestToOption(OptionQuestionRequest optionQuestionRequest) {
-    OptionQuestion optionQuestion = new OptionQuestion();
-    BeanUtils.copyProperties(optionQuestionRequest, optionQuestion);
-
-    return optionQuestion;
-  }
-
-  private OptionQuestionResponse optionToOptionResponse(OptionQuestion optionQuestion) {
-    OptionQuestionResponse optionQuestionResponse = new OptionQuestionResponse();
-    BeanUtils.copyProperties(optionQuestion, optionQuestionResponse);
-    return optionQuestionResponse;
+    return (questionRequest.getType() != QuestionType.CLOSED || questionRequest.getOptions() != null)
+        && (questionRequest.getType() != QuestionType.OPEN || questionRequest.getOptions() == null);
   }
 }

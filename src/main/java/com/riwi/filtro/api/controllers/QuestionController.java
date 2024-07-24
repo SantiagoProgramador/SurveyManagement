@@ -34,7 +34,7 @@ public class QuestionController {
   private final IQuestionService iQuestionService;
 
   @Operation(summary = "Show the questions by pagination")
-  @ApiResponse(responseCode = "400", description = "When the params send are invalid", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping
   public ResponseEntity<Page<QuestionResponse>> showAll(@RequestParam(defaultValue = "1") int page,
@@ -44,7 +44,7 @@ public class QuestionController {
   }
 
   @Operation(summary = "Show the question according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping(path = "/{id}")
   public ResponseEntity<QuestionResponse> showQuestion(@PathVariable Long id) {
@@ -53,7 +53,7 @@ public class QuestionController {
   }
 
   @Operation(summary = "Create a question with the information given")
-  @ApiResponse(responseCode = "400", description = "When the information given is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PostMapping(path = "/add")
   public ResponseEntity<QuestionResponse> addQuestion(@RequestBody QuestionRequest questionRequest) {
@@ -62,7 +62,7 @@ public class QuestionController {
   }
 
   @Operation(summary = "Update a question according to the id summoned")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found or the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
   public ResponseEntity<QuestionResponse> updateQuestion(@RequestBody QuestionRequest questionRequest,
@@ -72,7 +72,7 @@ public class QuestionController {
   }
 
   @Operation(summary = "Delete a question according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @DeleteMapping(path = "/{id}")
   public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
@@ -81,7 +81,7 @@ public class QuestionController {
   }
 
   @Operation(summary = "Update a question according to the id summoned without the options")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found or the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PatchMapping(path = "/update/{id}")
   public ResponseEntity<QuestionResponse> updateQuestionWithoutOptions(@RequestBody QuestionRequest questionRequest,

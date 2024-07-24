@@ -1,6 +1,5 @@
 package com.riwi.filtro.infrastructure.services;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,9 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
-import com.riwi.filtro.api.dto.response.SurveyToUser;
 import com.riwi.filtro.api.dto.response.UserResponse;
-import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
@@ -40,17 +37,16 @@ public class UserService implements IUserService {
     }
     Pageable pageable = PageRequest.of(page, size);
 
-    return this.userRepository.findAll(pageable).map(this::userToUserResponse);
+    return this.userRepository.findAll(pageable).map(userMapper::userToResponse);
   }
 
   @Override
   public UserResponse getById(Long id) {
     User user = findEntity(id);
-    UserResponse userResponse = new UserResponse();
+    UserResponse userResponse = this.userMapper.userToResponse(user);
 
-    BeanUtils.copyProperties(user, userResponse);
     if (user.getSurveys() != null) {
-      userResponse.setSurveys(user.getSurveys().stream().map(this::surveyToSurveyToUser).toList());
+      userResponse.setSurveys(user.getSurveys().stream().map(surveyMapper::surveyToSurveyToUser).toList());
     }
     return userResponse;
   }
@@ -62,20 +58,20 @@ public class UserService implements IUserService {
 
   @Override
   public UserResponse create(UserRequest request) {
-    User user = new User();
+    User user = this.userMapper.requestToUser(request);
 
-    this.userRequestToUser(request, user);
-
-    return this.userToUserResponse(this.userRepository.save(user));
+    return this.userMapper.userToResponse(this.userRepository.save(user));
   }
 
   @Override
   public UserResponse update(Long id, UserRequest request) {
-    User user = findEntity(id);
+    User existingUser = findEntity(id);
 
-    this.userRequestToUser(request, user);
+    User updatedUser = this.userMapper.requestToUser(request);
 
-    return this.userToUserResponse(this.userRepository.save(user));
+    updatedUser.setId(existingUser.getId());
+
+    return this.userMapper.userToResponse(this.userRepository.save(updatedUser));
   }
 
   @Override
@@ -83,24 +79,4 @@ public class UserService implements IUserService {
     User user = findEntity(id);
     this.userRepository.delete(user);
   }
-
-  private UserResponse userToUserResponse(User user) {
-    UserResponse userResponse = new UserResponse();
-
-    BeanUtils.copyProperties(user, userResponse);
-    return userResponse;
-  }
-
-  private User userRequestToUser(UserRequest userRequest, User user) {
-    BeanUtils.copyProperties(userRequest, user);
-
-    return user;
-  }
-
-  private SurveyToUser surveyToSurveyToUser(Survey survey) {
-    SurveyToUser surveyToUser = new SurveyToUser();
-    BeanUtils.copyProperties(survey, surveyToUser);
-    return surveyToUser;
-  }
-
 }

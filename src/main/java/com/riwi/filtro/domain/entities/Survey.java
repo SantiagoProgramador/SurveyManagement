@@ -39,10 +39,12 @@ public class Survey {
   private String description;
 
   @Column(nullable = false)
-  private LocalDateTime creationDate;
+  @Builder.Default
+  private LocalDateTime creationDate = LocalDateTime.now();
 
   @Column(nullable = false)
-  private boolean active;
+  @Builder.Default
+  private boolean active = true;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude

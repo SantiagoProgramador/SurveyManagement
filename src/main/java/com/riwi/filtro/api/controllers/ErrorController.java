@@ -18,19 +18,19 @@ import com.riwi.filtro.utils.exceptions.IdNotFoundException;
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
 public class ErrorController {
   @ExceptionHandler(IdNotFoundException.class)
-  public BaseErrorResponse IdNotFound(IdNotFoundException exception) {
+  public BaseErrorResponse idNotFound(IdNotFoundException exception) {
 
     return ErrorResponse.builder().message(exception.getMessage()).status(HttpStatus.BAD_REQUEST.name())
         .code(HttpStatus.BAD_REQUEST.value()).build();
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public BaseErrorResponse ErrorsResponse(MethodArgumentNotValidException exception) {
-    List<String> Errors = new ArrayList<>();
+  public BaseErrorResponse errorsResponse(MethodArgumentNotValidException exception) {
+    List<String> errors = new ArrayList<>();
 
-    exception.getAllErrors().forEach(error -> Errors.add(error.getDefaultMessage()));
+    exception.getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
 
-    return ErrorsResponse.builder().errors(Errors).status(HttpStatus.BAD_REQUEST.name())
+    return ErrorsResponse.builder().errors(errors).status(HttpStatus.BAD_REQUEST.name())
         .code(HttpStatus.BAD_REQUEST.value()).build();
   }
 }

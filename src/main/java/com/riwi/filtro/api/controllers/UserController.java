@@ -34,7 +34,7 @@ public class UserController {
   private final IUserService iUserService;
 
   @Operation(summary = "Show the users in pages")
-  @ApiResponse(responseCode = "400", description = "When the params send are invalid", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping
   public ResponseEntity<Page<UserResponse>> showAll(@RequestParam(defaultValue = "1") int page,
@@ -44,7 +44,7 @@ public class UserController {
   }
 
   @Operation(summary = "Show the user according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @GetMapping(path = "/{id}")
   public ResponseEntity<UserResponse> showUser(@PathVariable Long id) {
@@ -53,7 +53,7 @@ public class UserController {
   }
 
   @Operation(summary = "Create an user with the information summoned")
-  @ApiResponse(responseCode = "400", description = "When the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PostMapping(path = "/add")
   public ResponseEntity<UserResponse> addUser(@Validated @RequestBody UserRequest userRequest) {
@@ -62,7 +62,7 @@ public class UserController {
   }
 
   @Operation(summary = "Update an user according to the id given and the information summoned")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found or the information is incorrect", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
   public ResponseEntity<UserResponse> updateUser(@Validated @RequestBody UserRequest userRequest,
@@ -72,7 +72,7 @@ public class UserController {
   }
 
   @Operation(summary = "Delete an user according to the id given")
-  @ApiResponse(responseCode = "400", description = "When the id given is not found", content = {
+  @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @DeleteMapping(path = "/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
