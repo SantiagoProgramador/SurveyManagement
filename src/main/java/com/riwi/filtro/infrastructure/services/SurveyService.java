@@ -21,6 +21,8 @@ import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.SurveyRepository;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
+import com.riwi.filtro.infrastructure.abstracts.IUserService;
+import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
 import com.riwi.filtro.utils.exceptions.IdNotFoundException;
 
 import lombok.AllArgsConstructor;
@@ -34,6 +36,12 @@ public class SurveyService implements ISurveyService {
   @Autowired
   private final UserRepository userRepository;
 
+  @Autowired
+  private final SurveyMapper surveyMapper;
+
+  @Autowired
+  private final IUserService userService;
+
   @Override
   public Page<SurveyResponse> getAll(int size, int page) {
     if (page < 0) {
@@ -46,7 +54,7 @@ public class SurveyService implements ISurveyService {
 
   @Override
   public SurveyResponse getById(Long id) {
-    Survey survey = findSurvey(id);
+    Survey survey = findEntity(id);
     SurveyResponse surveyResponse = new SurveyResponse();
 
     BeanUtils.copyProperties(survey, surveyResponse);
@@ -57,7 +65,8 @@ public class SurveyService implements ISurveyService {
     return surveyResponse;
   }
 
-  private Survey findSurvey(Long id) {
+  @Override
+  public Survey findEntity(Long id) {
     return this.surveyRepository.findById(id).orElseThrow(() -> new IdNotFoundException("surveys"));
   }
 
@@ -72,14 +81,14 @@ public class SurveyService implements ISurveyService {
 
   @Override
   public SurveyResponse update(Long id, SurveyRequest request) {
-    Survey survey = findSurvey(id);
+    Survey survey = findEntity(id);
     this.surveyRequestToSurvey(request, survey);
     return this.surveyToSurveyResponse(this.surveyRepository.save(survey));
   }
 
   @Override
   public void delete(Long id) {
-    Survey survey = findSurvey(id);
+    Survey survey = findEntity(id);
     this.surveyRepository.delete(survey);
   }
 

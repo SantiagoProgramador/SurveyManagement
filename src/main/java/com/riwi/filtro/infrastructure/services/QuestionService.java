@@ -17,6 +17,9 @@ import com.riwi.filtro.domain.repositories.OptionQuestionRepository;
 import com.riwi.filtro.domain.repositories.QuestionRepository;
 import com.riwi.filtro.domain.repositories.SurveyRepository;
 import com.riwi.filtro.infrastructure.abstracts.IQuestionService;
+import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
+import com.riwi.filtro.infrastructure.mappers.QuestionMapper;
+import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
 import com.riwi.filtro.utils.enums.QuestionType;
 import com.riwi.filtro.utils.exceptions.IdNotFoundException;
 
@@ -35,6 +38,15 @@ public class QuestionService implements IQuestionService {
   @Autowired
   private final OptionQuestionRepository optionQuestionRepository;
 
+  @Autowired
+  private final QuestionMapper questionMapper;
+
+  @Autowired
+  private final ISurveyService surveyService;
+
+  @Autowired
+  private final SurveyMapper surveyMapper;
+
   @Override
   public Page<QuestionResponse> getAll(int size, int page) {
     if (page < 0) {
@@ -47,12 +59,13 @@ public class QuestionService implements IQuestionService {
 
   @Override
   public QuestionResponse getById(Long id) {
-    Question question = findQuestion(id);
+    Question question = findEntity(id);
 
     return this.questionToQuestionResponse(question);
   }
 
-  private Question findQuestion(Long id) {
+  @Override
+  public Question findEntity(Long id) {
     return this.questionRepository.findById(id).orElseThrow(() -> new IdNotFoundException("questions"));
   }
 
@@ -78,7 +91,7 @@ public class QuestionService implements IQuestionService {
 
   @Override
   public QuestionResponse update(Long id, QuestionRequest request) {
-    Question question = findQuestion(id);
+    Question question = findEntity(id);
 
     this.questionRequestToQuestion(request, question);
 
@@ -97,7 +110,7 @@ public class QuestionService implements IQuestionService {
   }
 
   public QuestionResponse updateWithoutOptions(Long id, QuestionRequest questionRequest) {
-    Question question = findQuestion(id);
+    Question question = findEntity(id);
     question.setActive(questionRequest.isActive());
     question.setSurvey(this.surveyRepository.findById(questionRequest.getSurveyId())
         .orElseThrow(() -> new IdNotFoundException("Surveys")));
@@ -109,7 +122,7 @@ public class QuestionService implements IQuestionService {
 
   @Override
   public void delete(Long id) {
-    Question question = findQuestion(id);
+    Question question = findEntity(id);
     this.questionRepository.delete(question);
   }
 

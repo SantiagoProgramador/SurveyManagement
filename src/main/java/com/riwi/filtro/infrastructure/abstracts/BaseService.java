@@ -1,9 +1,8 @@
 package com.riwi.filtro.infrastructure.abstracts;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.data.domain.Page;
 
-public interface BaseService<Request, Response, Id> {
+public interface BaseService<Entity, Request, Response, Id> {
 
   public Page<Response> getAll(int size, int page);
 
@@ -14,4 +13,6 @@ public interface BaseService<Request, Response, Id> {
   public Response update(Id id, Request request);
 
   public void delete(Id id);
+
+  public Entity  findEntity(Id id);
 }
