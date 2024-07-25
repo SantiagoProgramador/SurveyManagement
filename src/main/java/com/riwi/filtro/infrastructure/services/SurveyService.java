@@ -1,5 +1,7 @@
 package com.riwi.filtro.infrastructure.services;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.SurveyRepository;
 import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
+import com.riwi.filtro.infrastructure.helpers.EmailHelper;
 import com.riwi.filtro.infrastructure.mappers.QuestionMapper;
 import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
 import com.riwi.filtro.infrastructure.mappers.UserMapper;
@@ -38,6 +41,9 @@ public class SurveyService implements ISurveyService {
 
   @Autowired
   private final UserMapper userMapper;
+
+  @Autowired
+  private final EmailHelper emailHelper;
 
   @Override
   public Page<SurveyResponse> getAll(int size, int page) {
@@ -72,6 +78,10 @@ public class SurveyService implements ISurveyService {
 
     Survey survey = this.surveyMapper.requestToSurvey(request);
     survey.setUser(user);
+
+    if (Objects.nonNull(user.getEmail())) {
+      this.emailHelper.sendMail(user.getEmail(), user.getName(), survey.getTitle());
+    }
 
     return this.surveyMapper.surveyToResponse(this.surveyRepository.save(survey));
   }

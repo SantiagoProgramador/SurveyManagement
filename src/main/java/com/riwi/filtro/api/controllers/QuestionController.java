@@ -52,7 +52,7 @@ public class QuestionController {
     return ResponseEntity.ok(this.iQuestionService.getById(id));
   }
 
-  @Operation(summary = "Create a question with the information given")
+  @Operation(summary = "Create a question with the! information given")
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PostMapping(path = "/add")
