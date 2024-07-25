@@ -39,7 +39,8 @@ public class Question {
   private String text;
 
   @Column(nullable = false)
-  private boolean active;
+  @Builder.Default
+  private boolean active = true;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)

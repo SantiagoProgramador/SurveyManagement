@@ -31,7 +31,8 @@ public class OptionQuestion {
   private String text;
 
   @Column(nullable = false)
-  private boolean active;
+  @Builder.Default
+  private boolean active = true;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude

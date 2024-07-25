@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.riwi.filtro.api.dto.errors.ErrorResponse;
 import com.riwi.filtro.api.dto.request.UserRequest;
+import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
 
@@ -65,7 +66,7 @@ public class UserController {
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
-  public ResponseEntity<UserResponse> updateUser(@Validated @RequestBody UserRequest userRequest,
+  public ResponseEntity<UserResponse> updateUser(@Validated @RequestBody UserUpdateRequest userRequest,
       @PathVariable Long id) {
 
     return ResponseEntity.ok(this.iUserService.update(id, userRequest));

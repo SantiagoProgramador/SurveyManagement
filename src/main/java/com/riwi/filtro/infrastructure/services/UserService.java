@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
+import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.UserRepository;
@@ -64,10 +65,10 @@ public class UserService implements IUserService {
   }
 
   @Override
-  public UserResponse update(Long id, UserRequest request) {
+  public UserResponse update(Long id, UserUpdateRequest request) {
     User existingUser = findEntity(id);
 
-    User updatedUser = this.userMapper.requestToUser(request);
+    User updatedUser = this.userMapper.updateToUser(request);
 
     updatedUser.setId(existingUser.getId());
 

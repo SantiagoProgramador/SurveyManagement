@@ -38,7 +38,8 @@ public class User {
   private String password;
 
   @Column(nullable = false)
-  private boolean active;
+  @Builder.Default
+  private boolean active = true;
 
   @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = false)
   @ToString.Exclude

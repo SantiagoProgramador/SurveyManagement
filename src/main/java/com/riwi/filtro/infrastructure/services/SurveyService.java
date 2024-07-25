@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.SurveyRequest;
+import com.riwi.filtro.api.dto.request.update.SurveyUpdateRequest;
 import com.riwi.filtro.api.dto.response.SurveyResponse;
 import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.entities.User;
@@ -87,13 +88,13 @@ public class SurveyService implements ISurveyService {
   }
 
   @Override
-  public SurveyResponse update(Long id, SurveyRequest request) {
+  public SurveyResponse update(Long id, SurveyUpdateRequest request) {
     Survey survey = findEntity(id);
     if (survey.getUser().getId().equals(request.getUserId())) {
       User user = this.userService.findEntity(request.getUserId());
       survey.setUser(user);
     }
-    survey = this.surveyMapper.requestToSurvey(request);
+    survey = this.surveyMapper.updateToSurvey(request);
     return this.surveyMapper.surveyToResponse(this.surveyRepository.save(survey));
   }
 

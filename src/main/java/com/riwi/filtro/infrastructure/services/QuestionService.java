@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.OptionQuestionRequest;
 import com.riwi.filtro.api.dto.request.QuestionRequest;
+import com.riwi.filtro.api.dto.request.update.QuestionUpdateRequest;
 import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.domain.entities.OptionQuestion;
 import com.riwi.filtro.domain.entities.Question;
@@ -84,7 +85,7 @@ public class QuestionService implements IQuestionService {
   }
 
   @Override
-  public QuestionResponse update(Long id, QuestionRequest request) {
+  public QuestionResponse update(Long id, QuestionUpdateRequest request) {
     Question question = findEntity(id);
 
     if (question.getSurvey().getId().equals(request.getSurveyId())) {
@@ -95,7 +96,7 @@ public class QuestionService implements IQuestionService {
       throw new QuestionTypeException();
     }
 
-    question = this.questionMapper.requestToQuestion(request);
+    question = this.questionMapper.updateToQuestion(request);
 
     if (request.getOptions() != null) {
       this.optionQuestionRepository.deleteAll(question.getOptions());
@@ -108,14 +109,15 @@ public class QuestionService implements IQuestionService {
     return this.questionMapper.questionToResponse(this.questionRepository.save(question));
   }
 
-  public QuestionResponse updateWithoutOptions(Long id, QuestionRequest questionRequest) {
+  @Override
+  public QuestionResponse updateWithoutOptions(Long id, QuestionUpdateRequest questionRequest) {
     Question question = findEntity(id);
 
     if (question.getSurvey().getId().equals(questionRequest.getSurveyId())) {
       Survey survey = this.surveyService.findEntity(id);
       question.setSurvey(survey);
     }
-    question = this.questionMapper.requestToQuestion(questionRequest);
+    question = this.questionMapper.updateToQuestion(questionRequest);
 
     return this.questionMapper.questionToResponse(this.questionRepository.save(question));
   }

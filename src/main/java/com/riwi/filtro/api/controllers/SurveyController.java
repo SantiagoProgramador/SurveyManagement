@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.riwi.filtro.api.dto.errors.ErrorResponse;
 import com.riwi.filtro.api.dto.request.SurveyRequest;
+import com.riwi.filtro.api.dto.request.update.SurveyUpdateRequest;
 import com.riwi.filtro.api.dto.response.SurveyResponse;
 import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
 
@@ -65,7 +66,7 @@ public class SurveyController {
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
-  public ResponseEntity<SurveyResponse> updateSurvey(@Validated @RequestBody SurveyRequest surveyRequest,
+  public ResponseEntity<SurveyResponse> updateSurvey(@Validated @RequestBody SurveyUpdateRequest surveyRequest,
       @PathVariable Long id) {
 
     return ResponseEntity.ok(this.iSurveyService.update(id, surveyRequest));

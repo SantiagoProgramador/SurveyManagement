@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
+import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.api.dto.response.UserToSurvey;
 import com.riwi.filtro.domain.entities.User;
@@ -16,6 +17,10 @@ public interface UserMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "surveys", ignore = true)
   User requestToUser(UserRequest userRequest);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "surveys", ignore = true)
+  User updateToUser(UserUpdateRequest updateRequest);
 
   UserToSurvey userToUserToSurvey(User user);
 }

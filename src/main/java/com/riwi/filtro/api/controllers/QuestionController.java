@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.riwi.filtro.api.dto.errors.ErrorResponse;
 import com.riwi.filtro.api.dto.request.QuestionRequest;
+import com.riwi.filtro.api.dto.request.update.QuestionUpdateRequest;
 import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.infrastructure.abstracts.IQuestionService;
 
@@ -65,7 +66,7 @@ public class QuestionController {
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PutMapping(path = "/update/{id}")
-  public ResponseEntity<QuestionResponse> updateQuestion(@RequestBody QuestionRequest questionRequest,
+  public ResponseEntity<QuestionResponse> updateQuestion(@RequestBody QuestionUpdateRequest questionRequest,
       @PathVariable Long id) {
 
     return ResponseEntity.ok(this.iQuestionService.update(id, questionRequest));
@@ -84,7 +85,8 @@ public class QuestionController {
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
   @PatchMapping(path = "/update/{id}")
-  public ResponseEntity<QuestionResponse> updateQuestionWithoutOptions(@RequestBody QuestionRequest questionRequest,
+  public ResponseEntity<QuestionResponse> updateQuestionWithoutOptions(
+      @RequestBody QuestionUpdateRequest questionRequest,
       @PathVariable Long id) {
 
     return ResponseEntity.ok(this.iQuestionService.updateWithoutOptions(id, questionRequest));
