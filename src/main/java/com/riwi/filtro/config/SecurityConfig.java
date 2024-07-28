@@ -22,13 +22,17 @@ public class SecurityConfig {
 
   private static final String[] PUBLIC_MATCHERS = {
       "/public/**",
-      "/user/add",
-      "/survey/add",
-      "/question/add",
+      "/users/add",
+      "/surveys/add",
+      "/questions/add",
       "/surveys",
       "/surveys/update/*",
       "/questions/update/*",
       "/questions",
+      "/swagger-ui.html", "/swagger-ui/**",
+      "/v3/api-docs/**",
+      "/swagger-resources/**",
+      "/webjars/**"
   };
 
   @Bean

@@ -16,10 +16,17 @@ public interface UserMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "surveys", ignore = true)
+  @Mapping(target = "enabled", ignore = true)
+  @Mapping(target = "roles", ignore = true)
+  @Mapping(target = "authorities", ignore = true)
+  @Mapping(target = "active", ignore = true)
   User requestToUser(UserRequest userRequest);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "surveys", ignore = true)
+  @Mapping(target = "enabled", ignore = true)
+  @Mapping(target = "roles", ignore = true)
+  @Mapping(target = "authorities", ignore = true)
   User updateToUser(UserUpdateRequest updateRequest);
 
   UserToSurvey userToUserToSurvey(User user);

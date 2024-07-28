@@ -13,6 +13,8 @@ import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.RoleRepository;
 import com.riwi.filtro.domain.repositories.UserRepository;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Component
 public class DataBaseSeeder implements CommandLineRunner {
   @Autowired
@@ -25,6 +27,7 @@ public class DataBaseSeeder implements CommandLineRunner {
   private PasswordEncoder passwordEncoder;
 
   @Override
+  @Transactional
   public void run(String... args) throws Exception {
     if (roleRepository.count() == 0) {
       Role adminRole = new Role();
@@ -35,8 +38,10 @@ public class DataBaseSeeder implements CommandLineRunner {
       roleRepository.save(userRole);
     }
 
-    if (userRepository.findByUserName("admin") == null) {
+    if (userRepository.findByUsername("admin") == null) {
       User adminUser = new User();
+      adminUser.setName("ShantiAdmin");
+      adminUser.setEmail("andresx1277@gmail.com");
       adminUser.setUsername("admin");
       adminUser.setPassword(passwordEncoder.encode("adminPassword"));
       Set<Role> adminRoles = new HashSet<>();

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserToSurvey {
   private Long id;
   private String name;
-  private String userName;
+  private String username;
   private String email;
   private boolean active;
 }

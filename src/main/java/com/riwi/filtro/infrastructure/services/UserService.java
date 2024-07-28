@@ -15,6 +15,7 @@ import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.domain.entities.Role;
 import com.riwi.filtro.domain.entities.User;
+import com.riwi.filtro.domain.repositories.RoleRepository;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
 import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
@@ -33,6 +34,9 @@ public class UserService implements IUserService {
 
   @Autowired
   private final UserRepository userRepository;
+
+  @Autowired
+  private final RoleRepository roleRepository;
 
   @Autowired
   private final UserMapper userMapper;
@@ -68,16 +72,20 @@ public class UserService implements IUserService {
 
   @Override
   public UserResponse create(UserRequest request) {
-    this.userNameException(request.getUserName());
+    this.userNameException(request.getUsername());
 
     User user = this.userMapper.requestToUser(request);
+    Role userRole = roleRepository.findByName("ROLE_USER");
+    Set<Role> roles = new HashSet<>();
+    roles.add(userRole);
+    user.setRoles(roles);
 
     return this.userMapper.userToResponse(this.userRepository.save(user));
   }
 
   @Override
   public UserResponse update(Long id, UserUpdateRequest request) {
-    this.userNameException(request.getUserName());
+    this.userNameException(request.getUsername());
 
     User existingUser = findEntity(id);
 
@@ -95,7 +103,7 @@ public class UserService implements IUserService {
   }
 
   private UserNameException userNameException(String userName) {
-    if (this.userRepository.findByUserName(userName) != null) {
+    if (this.userRepository.findByUsername(userName) != null) {
       return new UserNameException(userName);
 
     }
@@ -104,7 +112,7 @@ public class UserService implements IUserService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = this.userRepository.findByUserName(username);
+    User user = this.userRepository.findByUsername(username);
     if (user == null) {
       throw new UsernameNotFoundException("Username not found: " + username);
     }

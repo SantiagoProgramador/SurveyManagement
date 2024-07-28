@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class UserUpdateRequest extends UserRequest {
-
+  private boolean active;
 }
