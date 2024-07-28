@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
@@ -44,6 +45,9 @@ public class UserService implements IUserService {
   @Autowired
   private final SurveyMapper surveyMapper;
 
+  @Autowired
+  private final PasswordEncoder passwordEncoder;
+
   @Override
   public Page<UserResponse> getAll(int size, int page) {
     if (page < 0) {
@@ -75,6 +79,7 @@ public class UserService implements IUserService {
     this.userNameException(request.getUsername());
 
     User user = this.userMapper.requestToUser(request);
+    user.setPassword(passwordEncoder.encode(request.getPassword()));
     Role userRole = roleRepository.findByName("ROLE_USER");
     Set<Role> roles = new HashSet<>();
     roles.add(userRole);
@@ -90,6 +95,7 @@ public class UserService implements IUserService {
     User existingUser = findEntity(id);
 
     User updatedUser = this.userMapper.updateToUser(request);
+    updatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
     updatedUser.setId(existingUser.getId());
 
