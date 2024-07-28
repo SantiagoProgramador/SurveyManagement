@@ -47,7 +47,7 @@ public class UserController {
   @Operation(summary = "Show the user according to the id given")
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
-  @GetMapping(path = "/{id}")
+  @GetMapping(path = "/{id}/profile")
   public ResponseEntity<UserResponse> showUser(@PathVariable Long id) {
 
     return ResponseEntity.ok(this.iUserService.getById(id));

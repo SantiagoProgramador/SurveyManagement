@@ -1,5 +1,6 @@
 package com.riwi.filtro.domain.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.riwi.filtro.utils.enums.QuestionType;
@@ -18,7 +19,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,8 +28,7 @@ import lombok.ToString;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Question {
+public class Question implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -39,7 +38,6 @@ public class Question {
   private String text;
 
   @Column(nullable = false)
-  @Builder.Default
   private boolean active = true;
 
   @Column(nullable = false)

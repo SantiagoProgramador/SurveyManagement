@@ -1,5 +1,6 @@
 package com.riwi.filtro.domain.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -25,8 +25,7 @@ import lombok.ToString;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Survey {
+public class Survey implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -39,11 +38,9 @@ public class Survey {
   private String description;
 
   @Column(nullable = false)
-  @Builder.Default
   private LocalDateTime creationDate = LocalDateTime.now();
 
   @Column(nullable = false)
-  @Builder.Default
   private boolean active = true;
 
   @ToString.Exclude

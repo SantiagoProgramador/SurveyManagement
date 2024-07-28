@@ -4,17 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.riwi.filtro.api.dto.request.UserRequest;
 import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
+import com.riwi.filtro.domain.entities.Role;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
 import com.riwi.filtro.infrastructure.mappers.SurveyMapper;
 import com.riwi.filtro.infrastructure.mappers.UserMapper;
 import com.riwi.filtro.utils.exceptions.IdNotFoundException;
+import com.riwi.filtro.utils.exceptions.UserNameException;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 
@@ -59,6 +68,8 @@ public class UserService implements IUserService {
 
   @Override
   public UserResponse create(UserRequest request) {
+    this.userNameException(request.getUserName());
+
     User user = this.userMapper.requestToUser(request);
 
     return this.userMapper.userToResponse(this.userRepository.save(user));
@@ -66,6 +77,8 @@ public class UserService implements IUserService {
 
   @Override
   public UserResponse update(Long id, UserUpdateRequest request) {
+    this.userNameException(request.getUserName());
+
     User existingUser = findEntity(id);
 
     User updatedUser = this.userMapper.updateToUser(request);
@@ -79,5 +92,26 @@ public class UserService implements IUserService {
   public void delete(Long id) {
     User user = findEntity(id);
     this.userRepository.delete(user);
+  }
+
+  private UserNameException userNameException(String userName) {
+    if (this.userRepository.findByUserName(userName) != null) {
+      return new UserNameException(userName);
+
+    }
+    return null;
+  }
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user = this.userRepository.findByUserName(username);
+    if (user == null) {
+      throw new UsernameNotFoundException("Username not found: " + username);
+    }
+    Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+    for (Role role : user.getRoles()) {
+      grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+    }
+    return user;
   }
 }
