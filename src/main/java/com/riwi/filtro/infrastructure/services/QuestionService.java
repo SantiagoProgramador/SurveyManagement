@@ -13,6 +13,7 @@ import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.domain.entities.OptionQuestion;
 import com.riwi.filtro.domain.entities.Question;
 import com.riwi.filtro.domain.entities.Survey;
+import com.riwi.filtro.domain.persistence.QuestionEntity;
 import com.riwi.filtro.domain.repositories.OptionQuestionRepository;
 import com.riwi.filtro.domain.repositories.QuestionRepository;
 import com.riwi.filtro.infrastructure.abstracts.IQuestionService;
@@ -47,7 +48,8 @@ public class QuestionService implements IQuestionService {
     }
     Pageable pageable = PageRequest.of(page, size);
 
-    return this.questionRepository.findAll(pageable).map(questionMapper::questionToResponse);
+    return this.questionRepository.findAll(pageable)
+        .map(entity -> this.questionMapper.questionToResponse(this.questionMapper.entityToQuestion(entity)));
   }
 
   @Override
@@ -59,7 +61,10 @@ public class QuestionService implements IQuestionService {
 
   @Override
   public Question findEntity(Long id) {
-    return this.questionRepository.findById(id).orElseThrow(() -> new IdNotFoundException("questions"));
+    QuestionEntity questionEntity = this.questionRepository.findById(id)
+        .orElseThrow(() -> new IdNotFoundException("question"));
+
+    return this.questionMapper.entityToQuestion(questionEntity);
   }
 
   @Override

@@ -8,6 +8,7 @@ import com.riwi.filtro.api.dto.request.update.SurveyUpdateRequest;
 import com.riwi.filtro.api.dto.response.SurveyResponse;
 import com.riwi.filtro.api.dto.response.SurveyToUser;
 import com.riwi.filtro.domain.entities.Survey;
+import com.riwi.filtro.domain.persistence.SurveyEntity;
 
 @Mapper(componentModel = "spring")
 public interface SurveyMapper {
@@ -29,5 +30,10 @@ public interface SurveyMapper {
   Survey updateToSurvey(SurveyUpdateRequest surveyUpdateRequest);
 
   SurveyToUser surveyToSurveyToUser(Survey survey);
+
+  @Mapping(target = "user.authorities", ignore = true)
+  Survey entityToSurvey(SurveyEntity surveyEntity);
+
+  SurveyEntity surveyToEntity(Survey survey);
 
 }

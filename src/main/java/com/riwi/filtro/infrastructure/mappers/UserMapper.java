@@ -7,7 +7,10 @@ import com.riwi.filtro.api.dto.request.UserRequest;
 import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.api.dto.response.UserToSurvey;
+import com.riwi.filtro.domain.entities.Role;
 import com.riwi.filtro.domain.entities.User;
+import com.riwi.filtro.domain.persistence.RoleEntity;
+import com.riwi.filtro.domain.persistence.UserEntity;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -30,4 +33,13 @@ public interface UserMapper {
   User updateToUser(UserUpdateRequest updateRequest);
 
   UserToSurvey userToUserToSurvey(User user);
+
+  @Mapping(target = "authorities", ignore = true)
+  User entityToUser(UserEntity userEntity);
+
+  UserEntity userToEntity(User user);
+
+  Role roleToEntity(RoleEntity roleEntity);
+
+  RoleEntity roleToEntity(Role role);
 }

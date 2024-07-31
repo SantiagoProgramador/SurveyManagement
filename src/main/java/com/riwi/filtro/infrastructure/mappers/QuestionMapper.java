@@ -10,6 +10,8 @@ import com.riwi.filtro.api.dto.response.OptionQuestionResponse;
 import com.riwi.filtro.api.dto.response.QuestionResponse;
 import com.riwi.filtro.domain.entities.OptionQuestion;
 import com.riwi.filtro.domain.entities.Question;
+import com.riwi.filtro.domain.persistence.OptionQuestionEntity;
+import com.riwi.filtro.domain.persistence.QuestionEntity;
 
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
@@ -24,10 +26,18 @@ public interface QuestionMapper {
   @Mapping(target = "survey", ignore = true)
   Question updateToQuestion(QuestionUpdateRequest questionUpdateRequest);
 
+  @Mapping(target = "survey.user.authorities", ignore = true)
+  Question entityToQuestion(QuestionEntity questionEntity);
+
+  QuestionEntity questionToEntity(Question question);
+
   OptionQuestionResponse optionToResponse(OptionQuestion optionQuestion);
 
   @Mapping(target = "question", ignore = true)
   @Mapping(target = "id", ignore = true)
   OptionQuestion requestToOptionQuestion(OptionQuestionRequest optionQuestionRequest);
 
+  OptionQuestionEntity optionToEntity(OptionQuestion optionQuestion);
+
+  OptionQuestion entityToOption(OptionQuestionEntity optionQuestionEntity);
 }

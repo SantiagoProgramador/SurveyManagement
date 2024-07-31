@@ -16,6 +16,8 @@ import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
 import com.riwi.filtro.domain.entities.Role;
 import com.riwi.filtro.domain.entities.User;
+import com.riwi.filtro.domain.persistence.RoleEntity;
+import com.riwi.filtro.domain.persistence.UserEntity;
 import com.riwi.filtro.domain.repositories.RoleRepository;
 import com.riwi.filtro.domain.repositories.UserRepository;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
@@ -55,7 +57,8 @@ public class UserService implements IUserService {
     }
     Pageable pageable = PageRequest.of(page, size);
 
-    return this.userRepository.findAll(pageable).map(userMapper::userToResponse);
+    return this.userRepository.findAll(pageable)
+        .map(entity -> this.userMapper.userToResponse(this.userMapper.entityToUser(entity)));
   }
 
   @Override
@@ -71,7 +74,8 @@ public class UserService implements IUserService {
 
   @Override
   public User findEntity(Long id) {
-    return this.userRepository.findById(id).orElseThrow(() -> new IdNotFoundException("users"));
+    UserEntity userEntity = this.userRepository.findById(id).orElseThrow(() -> new IdNotFoundException("user"));
+    return this.userMapper.entityToUser(userEntity);
   }
 
   @Override
@@ -80,8 +84,9 @@ public class UserService implements IUserService {
 
     User user = this.userMapper.requestToUser(request);
     user.setPassword(passwordEncoder.encode(request.getPassword()));
-    Role userRole = roleRepository.findByName("ROLE_USER");
-    Set<Role> roles = new HashSet<>();
+
+    RoleEntity userRole = roleRepository.findByName("ROLE_USER");
+    Set<RoleEntity> roles = new HashSet<>();
     roles.add(userRole);
     user.setRoles(roles);
 
@@ -105,7 +110,7 @@ public class UserService implements IUserService {
   @Override
   public void delete(Long id) {
     User user = findEntity(id);
-    this.userRepository.delete(user);
+    this.userRepository.delete(this.userMapper.userToEntity(user));
   }
 
   private UserNameException userNameException(String userName) {
@@ -118,14 +123,14 @@ public class UserService implements IUserService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = this.userRepository.findByUsername(username);
+    UserEntity user = this.userRepository.findByUsername(username);
     if (user == null) {
       throw new UsernameNotFoundException("Username not found: " + username);
     }
     Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-    for (Role role : user.getRoles()) {
+    for (RoleEntity role : user.getRoles()) {
       grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
     }
-    return user;
+    return this.userMapper.entityToUser(user);
   }
 }

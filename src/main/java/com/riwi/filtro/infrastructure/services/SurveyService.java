@@ -13,6 +13,7 @@ import com.riwi.filtro.api.dto.request.update.SurveyUpdateRequest;
 import com.riwi.filtro.api.dto.response.SurveyResponse;
 import com.riwi.filtro.domain.entities.Survey;
 import com.riwi.filtro.domain.entities.User;
+import com.riwi.filtro.domain.persistence.SurveyEntity;
 import com.riwi.filtro.domain.repositories.SurveyRepository;
 import com.riwi.filtro.infrastructure.abstracts.ISurveyService;
 import com.riwi.filtro.infrastructure.abstracts.IUserService;
@@ -53,7 +54,8 @@ public class SurveyService implements ISurveyService {
     }
     Pageable pageable = PageRequest.of(page, size);
 
-    return this.surveyRepository.findAll(pageable).map(surveyMapper::surveyToResponse);
+    return this.surveyRepository.findAll(pageable)
+        .map(entity -> this.surveyMapper.surveyToResponse(this.surveyMapper.entityToSurvey(entity)));
   }
 
   @Override
@@ -70,7 +72,8 @@ public class SurveyService implements ISurveyService {
 
   @Override
   public Survey findEntity(Long id) {
-    return this.surveyRepository.findById(id).orElseThrow(() -> new IdNotFoundException("surveys"));
+    SurveyEntity surveyEntity = this.surveyRepository.findById(id).orElseThrow(() -> new IdNotFoundException("survey"));
+    return this.surveyMapper.entityToSurvey(surveyEntity);
   }
 
   @Override
@@ -100,8 +103,9 @@ public class SurveyService implements ISurveyService {
 
   @Override
   public void delete(Long id) {
-    Survey survey = findEntity(id);
-    this.surveyRepository.delete(survey);
+    Survey survey = this.findEntity(id);
+
+    this.surveyRepository.delete(this.surveyMapper.surveyToEntity(survey));
   }
 
 }
