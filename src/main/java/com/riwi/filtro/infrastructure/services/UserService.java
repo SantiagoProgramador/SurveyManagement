@@ -88,9 +88,10 @@ public class UserService implements IUserService {
     RoleEntity userRole = roleRepository.findByName("ROLE_USER");
     Set<RoleEntity> roles = new HashSet<>();
     roles.add(userRole);
-    user.setRoles(roles);
+    user.setRoles(roles.stream().map(this.userMapper::roleToEntity));
 
-    return this.userMapper.userToResponse(this.userRepository.save(user));
+    return this.userMapper
+        .userToResponse(this.userMapper.entityToUser(this.userRepository.save(this.userMapper.userToEntity(user))));
   }
 
   @Override
