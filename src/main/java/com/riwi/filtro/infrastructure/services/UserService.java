@@ -105,7 +105,8 @@ public class UserService implements IUserService {
 
     updatedUser.setId(existingUser.getId());
 
-    return this.userMapper.userToResponse(this.userRepository.save(updatedUser));
+    return this.userMapper.userToResponse(
+        this.userMapper.entityToUser(this.userRepository.save(this.userMapper.userToEntity(updatedUser))));
   }
 
   @Override
