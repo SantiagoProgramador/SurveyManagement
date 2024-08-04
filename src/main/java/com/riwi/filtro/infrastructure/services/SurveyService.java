@@ -87,7 +87,8 @@ public class SurveyService implements ISurveyService {
       this.emailHelper.sendMail(user.getEmail(), user.getName(), survey.getTitle());
     }
 
-    return this.surveyMapper.surveyToResponse(this.surveyRepository.save(survey));
+    return this.surveyMapper.surveyToResponse(
+        this.surveyMapper.entityToSurvey(this.surveyRepository.save(this.surveyMapper.surveyToEntity(survey))));
   }
 
   @Override
@@ -98,7 +99,8 @@ public class SurveyService implements ISurveyService {
       survey.setUser(user);
     }
     survey = this.surveyMapper.updateToSurvey(request);
-    return this.surveyMapper.surveyToResponse(this.surveyRepository.save(survey));
+    return this.surveyMapper.surveyToResponse(
+        this.surveyMapper.entityToSurvey(this.surveyRepository.save(this.surveyMapper.surveyToEntity(survey))));
   }
 
   @Override

@@ -1,5 +1,7 @@
 package com.riwi.filtro.infrastructure.services;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -82,11 +84,13 @@ public class QuestionService implements IQuestionService {
       for (OptionQuestionRequest optionQuestionRequest : request.getOptions()) {
         OptionQuestion optionQuestion = this.questionMapper.requestToOptionQuestion(optionQuestionRequest);
         optionQuestion.setQuestion(question);
-        this.optionQuestionRepository.save(optionQuestion);
+        this.optionQuestionRepository.save(this.questionMapper.optionToEntity(optionQuestion));
       }
     }
 
-    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
+    return this.questionMapper
+        .questionToResponse(this.questionMapper
+            .entityToQuestion(this.questionRepository.save(this.questionMapper.questionToEntity(question))));
   }
 
   @Override
@@ -104,14 +108,16 @@ public class QuestionService implements IQuestionService {
     question = this.questionMapper.updateToQuestion(request);
 
     if (request.getOptions() != null) {
-      this.optionQuestionRepository.deleteAll(question.getOptions());
+      this.optionQuestionRepository.deleteAll(
+          question.getOptions().stream().map(this.questionMapper::optionToEntity).collect(Collectors.toSet()));
       for (OptionQuestionRequest optionQuestionRequest : request.getOptions()) {
         OptionQuestion optionQuestion = this.questionMapper.requestToOptionQuestion(optionQuestionRequest);
         optionQuestion.setQuestion(question);
-        this.optionQuestionRepository.save(optionQuestion);
+        this.optionQuestionRepository.save(this.questionMapper.optionToEntity(optionQuestion));
       }
     }
-    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
+    return this.questionMapper.questionToResponse(this.questionMapper
+        .entityToQuestion(this.questionRepository.save(this.questionMapper.questionToEntity(question))));
   }
 
   @Override
@@ -124,13 +130,14 @@ public class QuestionService implements IQuestionService {
     }
     question = this.questionMapper.updateToQuestion(questionRequest);
 
-    return this.questionMapper.questionToResponse(this.questionRepository.save(question));
+    return this.questionMapper.questionToResponse(this.questionMapper
+        .entityToQuestion(this.questionRepository.save(this.questionMapper.questionToEntity(question))));
   }
 
   @Override
   public void delete(Long id) {
     Question question = findEntity(id);
-    this.questionRepository.delete(question);
+    this.questionRepository.delete(this.questionMapper.questionToEntity(question));
   }
 
   private boolean isTypeCorrect(QuestionRequest questionRequest) {
