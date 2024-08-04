@@ -28,6 +28,7 @@ import com.riwi.filtro.utils.exceptions.UserNameException;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 
@@ -88,7 +89,7 @@ public class UserService implements IUserService {
     RoleEntity userRole = roleRepository.findByName("ROLE_USER");
     Set<RoleEntity> roles = new HashSet<>();
     roles.add(userRole);
-    user.setRoles(roles.stream().map(this.userMapper::roleToEntity));
+    user.setRoles(roles.stream().map(this.userMapper::roleToEntity).collect(Collectors.toSet()));
 
     return this.userMapper
         .userToResponse(this.userMapper.entityToUser(this.userRepository.save(this.userMapper.userToEntity(user))));
