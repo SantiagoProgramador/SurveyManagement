@@ -22,8 +22,6 @@ import lombok.ToString;
 
 import java.util.Set;
 
-import com.riwi.filtro.domain.entities.Survey;
-
 @Entity(name = "users")
 @Data
 @AllArgsConstructor
@@ -51,7 +49,7 @@ public class UserEntity implements Serializable {
   @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = false)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  private List<Survey> surveys;
+  private List<SurveyEntity> surveys;
 
   @ManyToMany
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))

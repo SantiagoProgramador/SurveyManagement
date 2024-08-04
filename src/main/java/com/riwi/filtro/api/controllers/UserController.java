@@ -1,7 +1,6 @@
 package com.riwi.filtro.api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.riwi.filtro.api.dto.errors.ErrorResponse;
@@ -34,16 +32,6 @@ public class UserController {
   @Autowired
   private final IUserService iUserService;
 
-  @Operation(summary = "Show the users in pages")
-  @ApiResponse(responseCode = "400", content = {
-      @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
-  @GetMapping
-  public ResponseEntity<Page<UserResponse>> showAll(@RequestParam(defaultValue = "1") int page,
-      @RequestParam(defaultValue = "3") int size) {
-
-    return ResponseEntity.ok(this.iUserService.getAll(size, page - 1));
-  }
-
   @Operation(summary = "Show the user according to the id given")
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
@@ -56,7 +44,7 @@ public class UserController {
   @Operation(summary = "Create an user with the information summoned")
   @ApiResponse(responseCode = "400", content = {
       @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) })
-  @PostMapping(path = "/add")
+  @PostMapping(path = "/signUp")
   public ResponseEntity<UserResponse> addUser(@Validated @RequestBody UserRequest userRequest) {
 
     return ResponseEntity.ok(this.iUserService.create(userRequest));

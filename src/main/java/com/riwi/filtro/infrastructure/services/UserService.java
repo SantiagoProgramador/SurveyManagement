@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.riwi.filtro.api.dto.request.UserRequest;
 import com.riwi.filtro.api.dto.request.update.UserUpdateRequest;
 import com.riwi.filtro.api.dto.response.UserResponse;
-import com.riwi.filtro.domain.entities.Role;
 import com.riwi.filtro.domain.entities.User;
 import com.riwi.filtro.domain.persistence.RoleEntity;
 import com.riwi.filtro.domain.persistence.UserEntity;
