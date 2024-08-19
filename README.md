@@ -70,7 +70,7 @@ https://texas-hold-em.onrender.com/api/v1/swagger-ui/index.html
 | (Handles HTTP requests/responses)   |
 |  +-------------------------------+  |
 |  | @RestController               |  |
-|  | - PokerHandController         |  |
+|  | - UserController         |  |
 |  +-------------------------------+  |
 +-----------------+-------------------+
                   |
