@@ -3,7 +3,7 @@
 
 ### Description
 
-- Your job is to compare pairs of poker hands and indicate which one is the winner, with what type of hand he won and which cards made him win.
+- ApiRest to manage and create surveys 
 
 Examples:
 
